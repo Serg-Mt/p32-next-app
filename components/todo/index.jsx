@@ -7,6 +7,10 @@ class Item {
   constructor(text) {
     Object.assign(this, { text }); //this.text = text;
   }
+  toggleCheck() {
+    this.checked = !this.checked;
+    return this;
+  }
 }
 
 
@@ -16,12 +20,18 @@ export function ToDoApp() {
     [list, setList] = useState([new Item('Дело 1'), new Item('Дело 2')]),
     addItem = text =>
       setList(prev => [...prev, new Item(text)]),
-    delItem = id => setList(prev => prev.filter(el => id !== el.id))
+    delItem = id => setList(prev => prev.filter(el => id !== el.id)),
+    toggleCheck = id => setList(prev => {
+      const
+        index = prev.findIndex(el => id === el.id),
+        elem = prev[index];
+      return prev.with(index, elem.toggleCheck());
+    })
 
 
   return <>
     <Form addItem={addItem} />
-    <List list={list} delItem={delItem} />
+    <List list={list} delItem={delItem} toggleCheck={toggleCheck}/>
   </>
 }
 
@@ -41,12 +51,12 @@ function Form({ addItem }) {
   </fieldset>
 }
 
-function List({ list, delItem }) {
+function List({ list, delItem, toggleCheck }) {
   console.log('List render');
   return <fieldset>
     <legend>List</legend>
     <ol>
-      {list.map(item => <ToDoItem key={item.id} item={item} delItem={delItem} />)}
+      {list.map(item => <ToDoItem key={item.id} item={item} delItem={delItem} toggleCheck={toggleCheck} />)}
     </ol>
   </fieldset>
 }
@@ -58,10 +68,10 @@ function List({ list, delItem }) {
  * @param {Item} props.item
  * @returns {JSX.Element}
  */
-function ToDoItem({ item, delItem }) {
+function ToDoItem({ item, delItem, toggleCheck }) {
   console.log('Item render');
   return <li>
-    <input type="checkbox" checked={item.checked} />
+    <input type="checkbox" checked={item.checked} onChange={() => toggleCheck(item.id)} />
     {item.text}
     {item.checked && '✔'}
     <Button onClick={() => delItem(item.id)}>❌</Button>
