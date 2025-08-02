@@ -5,7 +5,8 @@ const
   pages = [
     { href: '/', title: 'Home' },
     { href: '/todo', title: 'To Do List' },
-   
+    { href: '/todo2', title: 'To Do List +delegation' },
+
   ];
 
 export function Nav() {
