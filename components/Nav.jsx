@@ -13,7 +13,7 @@ export function Nav() {
   return <nav className={classes.nav}>
     <ul>
       {pages.map(({ href, title }) =>
-        <li>
+        <li key={href}>
           <Link href={href}>{title}</Link>
         </li>)}
     </ul>

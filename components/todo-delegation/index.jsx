@@ -1,5 +1,10 @@
 import { memo, useCallback, useRef, useState } from 'react';
 
+const
+  ADD = 'add',
+  DEL = 'del',
+  TOGGLE = 'toggle';
+
 class Item {
   id = Math.random() + '-' + Date.now();
   checked = false;
@@ -14,9 +19,9 @@ class Item {
   }
 }
 
-const Button = memo(function Button({ onClick, children }) {
+const Button = memo(function Button({ action, id, children }) {
   console.log('Button render', children);
-  return <button onClick={onClick}>{children}</button>
+  return <button data-action={action} data-id={id}>{children}</button>
 });
 
 /**
@@ -25,14 +30,13 @@ const Button = memo(function Button({ onClick, children }) {
  * @param {Item} props.item
  * @returns {JSX.Element}
  */
-function ToDoItem({ item, delItem, toggleCheck }) {
+function ToDoItem({ item }) {
   console.log('Item render', item.text);
-  const onClick = useCallback(() => delItem(item.id), []);
   return <li>
-    <input type="checkbox" checked={item.checked} onChange={() => toggleCheck(item.id)} />
+    <input type="checkbox" checked={item.checked} data-action={TOGGLE} />
     {item.text}
     {item.checked && '✔'}
-    <Button onClick={onClick}> ❌</Button>
+    <Button action={DEL} id={item.id}> ❌</Button>
   </li>
 }
 
@@ -40,17 +44,13 @@ const ToDoItemPure = memo(ToDoItem);
 
 
 
-const Form = memo(function Form({ addItem }) {
-  const
-    [value, setValue] = useState('-text-'),
-    onClick = useCallback(() => addItem(ref.current), []),
-    ref = useRef(null);
-  ref.current = value;
+const Form = memo(function Form({ inputRef }) {
+
   console.log('Form render');
   return <fieldset>
-    <legend>Form</legend>
-    <input value={value} onInput={event => setValue(event.target.value)} />
-    <Button onClick={onClick}>➕</Button>
+    <legend>Form2</legend>
+    <input ref={inputRef} />
+    <Button action={ADD}>➕</Button>
   </fieldset>
 });
 
@@ -58,31 +58,52 @@ export function ToDoApp() {
   console.log('ToDoApp render');
   const
     [list, setList] = useState([new Item('Дело 1'), new Item('Дело 2')]),
-    addItem = useCallback(text => setList(prev => [...prev, new Item(text)]), []),
-    delItem = useCallback(id => setList(prev => prev.filter(el => id !== el.id)), []),
-    toggleCheck = useCallback(id => setList(prev => {
-      const
-        index = prev.findIndex(el => id === el.id),
-        elem = prev[index];
-      return prev.with(index, elem.toggleCheck());
-    }), []);
+    inputRef = useRef(null);
+  // addItem = useCallback(text => setList(prev => [...prev, new Item(text)]), []),
+  // delItem = useCallback(id => setList(prev => prev.filter(el => id !== el.id)), []),
+  // toggleCheck = useCallback(id => setList(prev => {
+  //   const
+  //     index = prev.findIndex(el => id === el.id),
+  //     elem = prev[index];
+  //   return prev.with(index, elem.toggleCheck());
+  // }), []);
+  const onClick = event => {
+    const
+      { target } = event,
+      actionTarget = target.closest('[data-action]');
+    if (!actionTarget)
+      return;
+    const { action, id } = actionTarget.dataset;
+    console.log({ target, actionTarget, action, id });
+    switch (action) {
+      case ADD:
+        setList(prev => [...prev, new Item(inputRef.current.value)]);
+        return;
+      case DEL:
+        setList(prev => prev.filter(el => id !== el.id))
+        return;
+
+      case TOGGLE:
+    }
+  }
 
 
-  return <>
-    <Form addItem={addItem} />
-    <List list={list} delItem={delItem} toggleCheck={toggleCheck} />
-  </>
+  return <fieldset onClick={onClick}>
+    <legend>ToDoApp</legend>
+    <Form inputRef={inputRef} />
+    <List list={list} />
+  </fieldset>
 }
 
 
 
 
-function List({ list, delItem, toggleCheck }) {
+function List({ list }) {
   console.log('List render');
   return <fieldset>
     <legend>List</legend>
     <ol>
-      {list.map(item => <ToDoItemPure key={item.id} item={item} delItem={delItem} toggleCheck={toggleCheck} />)}
+      {list.map(item => <ToDoItemPure key={item.id} item={item} />)}
     </ol>
   </fieldset>
 }
