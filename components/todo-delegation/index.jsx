@@ -19,9 +19,9 @@ class Item {
   }
 }
 
-const Button = memo(function Button({ action, id, children }) {
+const Button = memo(function Button({ action, children }) {
   console.log('Button render', children);
-  return <button data-action={action} data-id={id}>{children}</button>
+  return <button data-action={action}>{children}</button>
 });
 
 /**
@@ -32,11 +32,11 @@ const Button = memo(function Button({ action, id, children }) {
  */
 function ToDoItem({ item }) {
   console.log('Item render', item.text);
-  return <li>
+  return <li data-id={item.id}>
     <input type="checkbox" checked={item.checked} data-action={TOGGLE} />
     {item.text}
     {item.checked && '✔'}
-    <Button action={DEL} id={item.id}> ❌</Button>
+    <Button action={DEL} > ❌</Button>
   </li>
 }
 
@@ -73,7 +73,8 @@ export function ToDoApp() {
       actionTarget = target.closest('[data-action]');
     if (!actionTarget)
       return;
-    const { action, id } = actionTarget.dataset;
+    const { action } = actionTarget.dataset,
+      id = target?.closest('[data-id]')?.dataset?.id;
     console.log({ target, actionTarget, action, id });
     switch (action) {
       case ADD:
