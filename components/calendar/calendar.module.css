@@ -1,0 +1,31 @@
+.flex {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.default {
+  font-family: sans-serif;
+
+  td {
+    text-align: center;
+  }
+
+  .selected {
+    &::before {
+      content: '[';
+    } 
+    &::after {
+      content: ']';
+    }
+    background-color: aqua;
+    border-radius: 50%;
+  }
+}
+
+.custom {
+  font-style: italic;
+
+  caption {
+    text-decoration: underline;
+  }
+}
