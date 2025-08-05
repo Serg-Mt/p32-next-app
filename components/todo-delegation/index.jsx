@@ -1,4 +1,4 @@
-import { memo, useCallback, useRef, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 
 const
   ADD = 'add',
@@ -85,6 +85,12 @@ export function ToDoApp() {
         return;
 
       case TOGGLE:
+        setList(prev => {
+          const
+            index = prev.findIndex(el => id === el.id),
+            elem = prev[index];
+          return prev.with(index, elem.toggleCheck());
+        });
     }
   }
 
