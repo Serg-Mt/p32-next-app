@@ -29,3 +29,11 @@
     text-decoration: underline;
   }
 }
+
+.dateselector{
+  border: 1px solid gray;
+  text-align: right;
+  &::after {
+    content: '📆';
+  }
+}

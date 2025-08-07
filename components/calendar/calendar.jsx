@@ -49,7 +49,10 @@ function Week({ start, max, selected }) {
     {Array.from({ length: 7 }, (_, index) => {
       const
         day = start + index;
-      return <td key={day} className={+day === +selected ? classes.selected : ''}>
+      return <td
+        data-day={day}
+        key={day}
+        className={+day === +selected ? classes.selected : ''}>
         {day >= 1 && day <= max && day}
       </td>
     })}
